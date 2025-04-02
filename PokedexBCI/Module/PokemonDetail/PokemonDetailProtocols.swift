@@ -9,28 +9,43 @@
 //
 
 import Foundation
+import UIKit
 
 //MARK: Presenter -> Router
 protocol PokemonDetailWireframeProtocol: AnyObject {
-    
+    static func createModule(with pokemon: ResultPokeDex) -> UIViewController
 }
 
 //MARK: View -> Presenter
 protocol PokemonDetailPresenterProtocol: AnyObject {
-    var interactor: PokemonDetailInteractorInputProtocol? { get set }
+    var interactor: PokemonDetailInteractorInputProtocol? { get}
+    
+    func viewDidLoad()
+    var pokemon: ResultPokeDex { get }
+    var pokemonDetail: PokemonDetail? { get }
 }
 
 //MARK: Interactor -> Presenter
 protocol PokemonDetailInteractorOutputProtocol: AnyObject {
     
+    func didReceiveDetail(_ detail: PokemonDetail)
+    func onError(_ error: Error)
 }
 
 //MARK: Presenter -> Interactor
 protocol PokemonDetailInteractorInputProtocol: AnyObject {
     var presenter: PokemonDetailInteractorOutputProtocol?  { get set }
+    
+    func fetchPokemonDetail(id: Int)
+    
 }
 
 //MARK: Presenter -> View
 protocol PokemonDetailViewProtocol: AnyObject {
     var presenter: PokemonDetailPresenterProtocol?  { get set }
+    
+    func showPokemonDetail(_ detail: PokemonDetail)
+    func showLoading()
+    func hideLoading()
+    func showError(message: String)
 }

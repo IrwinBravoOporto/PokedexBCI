@@ -17,18 +17,29 @@ struct BaseUrl {
 }
 
 public enum Endpoints: EndpointsProtocols {
-    
     case listPokedex
+    case pokemonDetail(id: Int)
+    case pokemonSpecies(id: Int)  // Para información adicional como descripciones
     
     public var url: String {
         switch self {
-        
-        case .listPokedex :
+        case .listPokedex:
             return BaseUrl.baseURL + "/pokemon?"
+        case .pokemonDetail(let id):
+            return BaseUrl.baseURL + "/pokemon/\(id)"
+        case .pokemonSpecies(let id):
+            return BaseUrl.baseURL + "/pokemon-species/\(id)"
         }
-    
     }
+    
     public var fileName: String {
-        return "Fatal Error service \(self.url)"
+        switch self {
+        case .listPokedex:
+            return "pokemon_list"
+        case .pokemonDetail:
+            return "pokemon_detail"
+        case .pokemonSpecies:
+            return "pokemon_species"
+        }
     }
 }

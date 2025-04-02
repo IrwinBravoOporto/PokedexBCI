@@ -9,13 +9,54 @@
 import UIKit
 
 extension PokemonDetailView {
-    func addViews() {
-        
+    private func setupView() {
+        backgroundColor = .systemBackground
+        setupHeaderBackground()
+        setupPokemonImage()
+        setupNameAndTypes()
     }
     
-    func setupConstraints() {
+    private func setupHeaderBackground() {
+        headerBackground.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(headerBackground)
         NSLayoutConstraint.activate([
-            
+            headerBackground.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerBackground.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            headerBackground.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            headerBackground.heightAnchor.constraint(equalToConstant: 180)
+        ])
+    }
+    
+    private func setupPokemonImage() {
+        pokemonImageView.contentMode = .scaleAspectFit
+        pokemonImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(pokemonImageView)
+        
+        NSLayoutConstraint.activate([
+            pokemonImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 40),
+            pokemonImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            pokemonImageView.widthAnchor.constraint(equalToConstant: 200),
+            pokemonImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
+    private func setupNameAndTypes() {
+        let nameStack = UIStackView(arrangedSubviews: [nameLabel, idLabel])
+        nameStack.axis = .horizontal
+        nameStack.spacing = 12
+        nameStack.alignment = .center
+        
+        // Configurar stack completo
+        let mainStack = UIStackView(arrangedSubviews: [nameStack, typesStackView])
+        mainStack.axis = .vertical
+        mainStack.spacing = 12
+        mainStack.alignment = .center
+        mainStack.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(mainStack)
+        
+        NSLayoutConstraint.activate([
+            mainStack.topAnchor.constraint(equalTo: pokemonImageView.bottomAnchor, constant: 16),
+            mainStack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
         ])
     }
 }

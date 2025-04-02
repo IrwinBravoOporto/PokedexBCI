@@ -16,4 +16,9 @@ struct ListPokedexResponse : Codable {
 struct ResultPokeDex: Codable {
     var name: String?
     var url: String?
+    
+    var id: Int? {
+        guard let url = url else { return nil }
+        return Int(url.split(separator: "/").last?.description ?? "")
+    }
 }

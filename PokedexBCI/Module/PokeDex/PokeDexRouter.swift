@@ -27,8 +27,7 @@ class PokeDexRouter: PokeDexWireframeProtocol {
     }
     
     func navigateToPokemonDetail(from view: PokeDexViewProtocol?, with pokemon: ResultPokeDex) {
-        // Implementación de navegación a detalle
-        let detailVC = PokemonDetailRouter.createModule()
+        let detailVC = PokemonDetailRouter.createModule(with: pokemon)
         if let sourceView = view as? UIViewController {
             sourceView.navigationController?.pushViewController(detailVC, animated: true)
         }

@@ -11,21 +11,49 @@
 import UIKit
 
 class PokemonDetailPresenter {
+    // MARK: - Properties
     weak private var view: PokemonDetailViewProtocol?
-    var interactor: PokemonDetailInteractorInputProtocol?
-    private let router: PokemonDetailWireframeProtocol
-
-    init(interface: PokemonDetailViewProtocol, interactor: PokemonDetailInteractorInputProtocol?, router: PokemonDetailWireframeProtocol) {
+    internal var interactor: PokemonDetailInteractorInputProtocol?
+    private var router: PokemonDetailWireframeProtocol
+    
+    let pokemon: ResultPokeDex
+    var pokemonDetail: PokemonDetail?
+    
+    // MARK: - Initialization
+    init(interface: PokemonDetailViewProtocol,
+         interactor: PokemonDetailInteractorInputProtocol,
+         router: PokemonDetailWireframeProtocol,
+         pokemon: ResultPokeDex) {
         self.view = interface
         self.interactor = interactor
         self.router = router
+        self.pokemon = pokemon
     }
 }
 
+// MARK: - PokemonDetailPresenterProtocol
 extension PokemonDetailPresenter: PokemonDetailPresenterProtocol {
-    
+    func viewDidLoad() {
+        view?.showLoading()
+        
+        if let id = pokemon.id {
+            interactor?.fetchPokemonDetail(id: id)
+        } else {
+            view?.showError(message: "Invalid Pokémon ID")
+        }
+    }
 }
 
+// MARK: - PokemonDetailInteractorOutputProtocol
 extension PokemonDetailPresenter: PokemonDetailInteractorOutputProtocol {
+    func didReceiveDetail(_ detail: PokemonDetail) {
+        pokemonDetail = detail
+        view?.hideLoading()
+        view?.showPokemonDetail(detail)
+    }
     
+    func onError(_ error: Error) {
+        view?.hideLoading()
+        view?.showError(message: error.localizedDescription)
+    }
 }

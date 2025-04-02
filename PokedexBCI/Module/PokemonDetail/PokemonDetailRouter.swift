@@ -11,18 +11,20 @@
 import UIKit
 
 class PokemonDetailRouter: PokemonDetailWireframeProtocol {
-    weak var viewController: UIViewController?
-
-    static func createModule() -> UIViewController {
+    static func createModule(with pokemon: ResultPokeDex) -> UIViewController {
         let view = PokemonDetailViewController()
         let interactor = PokemonDetailInteractor()
         let router = PokemonDetailRouter()
-        let presenter = PokemonDetailPresenter(interface: view, interactor: interactor, router: router)
-
+        let presenter = PokemonDetailPresenter(
+            interface: view,
+            interactor: interactor,
+            router: router,
+            pokemon: pokemon
+        )
+        
         view.presenter = presenter
         interactor.presenter = presenter
-        router.viewController = view
-
+        
         return view
     }
 }

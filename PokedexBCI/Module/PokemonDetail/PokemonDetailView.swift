@@ -9,17 +9,185 @@
 import UIKit
 
 class PokemonDetailView: UIView {
-    // MARK: Child views
     
+    // MARK: - Components
+     let scrollView = UIScrollView()
+     let contentView = UIView()
     
-    // MARK: Initializers
+     let headerBackground = GradientView()
+     let pokemonImageView = UIImageView()
+     let nameLabel = UILabel()
+     let idLabel = UILabel()
+     let typesStackView = UIStackView()
+    
+     let infoCardStack = UIStackView()
+     let aboutCard = InfoCardView()
+    
+     let loadingIndicator = UIActivityIndicatorView(style: .large)
+    
+    // MARK: - Initialization
     init() {
         super.init(frame: .zero)
-        addViews()
+        setupView()
+        setupHierarchy()
         setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Configuration
+    func configure(with detail: PokemonDetail) {
+        nameLabel.text = detail.name.capitalized
+        idLabel.text = "#\(String(format: "%03d", detail.id))"
+        
+        if let primaryType = detail.types.first?.type.name {
+            headerBackground.setGradient(for: primaryType)
+        }
+        
+        if let imageUrl = detail.sprites.other?.officialArtwork?.frontDefault {
+            pokemonImageView.load(url: URL(string: imageUrl) ?? URL(fileURLWithPath: String()))
+        }
+        
+        setupTypes(detail.types)
+        
+        aboutCard.configure(
+            height: "\(Double(detail.height)/10.0) m",
+            weight: "\(Double(detail.weight)/10.0) kg",
+            experience: "N/A"
+        )
+    }
+    
+    // MARK: - Private Methods
+    private func setupView() {
+        backgroundColor = .systemBackground
+        
+        headerBackground.layer.cornerRadius = 30
+        headerBackground.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        pokemonImageView.contentMode = .scaleAspectFit
+        pokemonImageView.layer.shadowColor = UIColor.black.cgColor
+        pokemonImageView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        pokemonImageView.layer.shadowOpacity = 0.3
+        pokemonImageView.layer.shadowRadius = 10
+        
+        nameLabel.font = UIFont.systemFont(ofSize: 32, weight: .heavy)
+        nameLabel.textColor = .white
+        
+        idLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        idLabel.textColor = UIColor.white.withAlphaComponent(0.8)
+        
+        typesStackView.axis = .horizontal
+        typesStackView.spacing = 10
+        typesStackView.distribution = .fillEqually
+        
+        infoCardStack.axis = .vertical
+        infoCardStack.spacing = 20
+        infoCardStack.distribution = .fill
+    }
+    
+    private func setupHierarchy() {
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(headerBackground)
+        headerBackground.addSubview(pokemonImageView)
+        headerBackground.addSubview(nameLabel)
+        headerBackground.addSubview(idLabel)
+        headerBackground.addSubview(typesStackView)
+        
+        contentView.addSubview(infoCardStack)
+        infoCardStack.addArrangedSubview(aboutCard)
+        
+        addSubview(loadingIndicator)
+    }
+    
+    private func setupConstraints() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+        
+        setupHeaderConstraints()
+        setupCardsConstraints()
+        setupLoadingIndicatorConstraints()
+    }
+    
+    private func setupHeaderConstraints() {
+        headerBackground.translatesAutoresizingMaskIntoConstraints = false
+        pokemonImageView.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        idLabel.translatesAutoresizingMaskIntoConstraints = false
+        typesStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            headerBackground.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerBackground.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            headerBackground.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            headerBackground.heightAnchor.constraint(equalToConstant: 280),
+            
+            pokemonImageView.centerXAnchor.constraint(equalTo: headerBackground.centerXAnchor),
+            pokemonImageView.centerYAnchor.constraint(equalTo: headerBackground.centerYAnchor, constant: 20),
+            pokemonImageView.widthAnchor.constraint(equalToConstant: 200),
+            pokemonImageView.heightAnchor.constraint(equalToConstant: 200),
+            
+            nameLabel.bottomAnchor.constraint(equalTo: pokemonImageView.topAnchor, constant: -20),
+            nameLabel.centerXAnchor.constraint(equalTo: headerBackground.centerXAnchor),
+            
+            idLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
+            idLabel.centerXAnchor.constraint(equalTo: headerBackground.centerXAnchor),
+            
+            typesStackView.topAnchor.constraint(equalTo: pokemonImageView.bottomAnchor, constant: 40),
+            typesStackView.centerXAnchor.constraint(equalTo: headerBackground.centerXAnchor),
+            typesStackView.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    private func setupCardsConstraints() {
+        infoCardStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            infoCardStack.topAnchor.constraint(equalTo: typesStackView.bottomAnchor, constant: 30),
+            infoCardStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            infoCardStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            
+        ])
+        
+        aboutCard.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            aboutCard.heightAnchor.constraint(equalToConstant: 120),
+        ])
+    }
+    
+    private func setupLoadingIndicatorConstraints() {
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+    
+    private func setupTypes(_ types: [PokemonDetail.PokemonType]) {
+        typesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        for type in types {
+            let pillView = TypePillView()
+            pillView.configure(with: type.type.name)
+            typesStackView.addArrangedSubview(pillView)
+        }
     }
 }
