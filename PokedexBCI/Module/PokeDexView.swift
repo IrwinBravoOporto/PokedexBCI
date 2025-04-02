@@ -10,24 +10,129 @@ import UIKit
 import Lottie
 
 class PokeDexView: UIView {
-    // MARK: Child views
+    // MARK: - Components
     let animationView = LottieAnimationView()
     
-    // MARK: Initializers
+    let searchStackView = UIStackView()
+    
+    let searchBar: UISearchBar = {
+        let sb = UISearchBar()
+        sb.placeholder = "Search Pokémon..."
+        sb.searchBarStyle = .minimal
+        
+        // Configuración para fondo transparente con borde blanco
+        sb.backgroundImage = UIImage()
+        sb.backgroundColor = .clear
+        sb.isTranslucent = true
+        
+        // Personalización del text field
+        if let textField = sb.value(forKey: "searchField") as? UITextField {
+            // Fondo semitransparente
+            textField.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+            
+            // Borde blanco sutil
+            textField.layer.borderWidth = 1.0
+            textField.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+            textField.layer.cornerRadius = 10
+            textField.layer.masksToBounds = true
+            
+            // Estilo del texto
+            textField.textColor = .white
+            textField.tintColor = .white // Color del cursor
+            textField.attributedPlaceholder = NSAttributedString(
+                string: "Search Pokémon...",
+                attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.7)]
+            )
+            
+            // Padding interno
+            textField.leftView?.tintColor = .white
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: textField.frame.height))
+            textField.leftView = paddingView
+            textField.leftViewMode = .always
+        }
+        
+        sb.translatesAutoresizingMaskIntoConstraints = false
+        return sb
+    }()
+    
+    let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        
+        // Texto
+        button.setTitle("Cancelar", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        
+      
+        
+        // Efectos visuales
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 3
+        button.layer.shadowOpacity = 0.1
+        
+        // Tamaño fijo
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 85).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        
+        return button
+    }()
+    
+    let headerImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(named: "pngaaa.com-14401") ?? UIImage(named: "placeholder")
+        return iv
+    }()
+    
+    
+    let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
+        
+        // Configuración para fondo transparente
+        cv.backgroundColor = .clear
+        cv.backgroundView = nil
+        cv.isOpaque = false
+        
+        return cv
+    }()
+    
+    // MARK: - Initialization
     init() {
         super.init(frame: .zero)
-        addViews()
-        setupConstraints()
-        setupAnimation()
+        setupView()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupAnimation() {
-        animationView.backgroundColor = .clear
+    private func setupView() {
+        // Primero configurar las propiedades básicas
+        configureComponents()
+        
+        // Luego añadir las vistas
+        addViews()
+        
+        // Finalmente activar constraints
+        setupConstraints()
+    }
+    
+    private func configureComponents() {
         animationView.contentMode = .scaleAspectFill
         animationView.loopMode = .loop
+        animationView.backgroundColor = .clear
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        headerImageView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
     }
 }

@@ -11,24 +11,94 @@
 import UIKit
 
 class PokeDexPresenter {
+    // MARK: - Properties
     weak private var view: PokeDexViewProtocol?
     var interactor: PokeDexInteractorInputProtocol?
     private let router: PokeDexWireframeProtocol
-
+    
+    private var pokemons: [ResultPokeDex] = []
+    private var filteredPokemons: [ResultPokeDex] = []
+    private var isSearching = false
+    
+    // MARK: - Initialization
     init(interface: PokeDexViewProtocol, interactor: PokeDexInteractorInputProtocol?, router: PokeDexWireframeProtocol) {
         self.view = interface
         self.interactor = interactor
         self.router = router
     }
+    
 }
 
+// MARK: - PokeDexPresenterProtocol
 extension PokeDexPresenter: PokeDexPresenterProtocol {
-    
     func viewDidLoad() {
         view?.playBackgroundAnimation()
+        getService()
+    }
+    
+    func getService() {
+        // Mostrar loading
+        //view?.showLoader()
+        
+        interactor?.fetchServiceListPokeDex { [weak self] result in
+            DispatchQueue.main.async {
+                //self?.view?.hideLoader()
+                
+                switch result {
+                case .success(let response):
+                    self?.pokemons = response.results ?? []
+                    self?.filteredPokemons = response.results ?? []
+                    self?.view?.reloadCollectionView()
+                    
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                    //self?.view?.showError(message: "Error al cargar los Pokémon")
+                }
+            }
+        }
+    }
+    
+    func searchDidBegin() {
+        isSearching = true
+        view?.showCancelButton(true)
+    }
+    
+    func cancelSearch() {
+        isSearching = false
+        filteredPokemons = pokemons
+        view?.showCancelButton(false)
+        view?.reloadCollectionView()
+    }
+    
+    func searchPokemon(with text: String) {
+        if text.isEmpty {
+            filteredPokemons = pokemons
+        } else {
+            filteredPokemons = pokemons.filter {
+                $0.name?.lowercased().contains(text.lowercased()) ?? false
+            }
+        }
+        view?.reloadCollectionView()
+    }
+    
+    func didSelectPokemon(at index: Int) {
+        guard index < filteredPokemons.count else { return }
+        let selectedPokemon = filteredPokemons[index]
+        // Aquí podrías usar el router para navegar a un detalle
+        print("Selected Pokémon: \(selectedPokemon.name)")
+    }
+    
+    var numberOfPokemons: Int {
+        return filteredPokemons.count
+    }
+    
+    func pokemon(at index: Int) -> ResultPokeDex? {
+        guard index < filteredPokemons.count else { return nil }
+        return filteredPokemons[index]
     }
 }
 
+// MARK: - PokeDexInteractorOutputProtocol
 extension PokeDexPresenter: PokeDexInteractorOutputProtocol {
-    
+    // Implementa métodos de respuesta del interactor si es necesario
 }

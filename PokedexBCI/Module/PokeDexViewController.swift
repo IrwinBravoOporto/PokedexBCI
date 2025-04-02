@@ -16,15 +16,103 @@ class PokeDexViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view = mainView
+        setupDelegates()
         presenter?.viewDidLoad()
+    }
+    
+    private func setupDelegates() {
+        mainView.searchBar.delegate = self
+        mainView.collectionView.delegate = self
+        mainView.collectionView.dataSource = self
+        mainView.cancelButton.addTarget(self, action: #selector(cancelSearch), for: .touchUpInside)
+    }
+    
+    @objc private func cancelSearch() {
+        mainView.searchBar.text = ""
+        mainView.searchBar.resignFirstResponder()
+        mainView.cancelButton.isHidden = true
+        presenter?.cancelSearch()
     }
 }
 
 extension PokeDexViewController: PokeDexViewProtocol {
+    func setPokeDexData(_ data: [ResultPokeDex]) {
+        print(data.first?.name ?? "")
+    }
+    
     func playBackgroundAnimation() {
         DispatchQueue.main.async {
             self.mainView.animationView.animation = LottieAnimation.named(AppLocalized.AnimationBackgroundPokedex)
             self.mainView.animationView.play()
         }
+    }
+    
+    func reloadCollectionView() {
+        mainView.collectionView.reloadData()
+    }
+    
+    func showCancelButton(_ show: Bool) {
+        mainView.cancelButton.isHidden = !show
+    }
+}
+
+extension PokeDexViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        presenter?.searchDidBegin()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        presenter?.searchPokemon(with: searchText)
+    }
+}
+
+extension PokeDexViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return presenter?.numberOfPokemons ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier,
+            for: indexPath) as? PokemonCollectionViewCell,
+            let pokemon = presenter?.pokemon(at: indexPath.row) else {
+                return UICollectionViewCell()
+        }
+        
+        cell.configure(with: pokemon)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter?.didSelectPokemon(at: indexPath.row)
+    }
+}
+
+extension PokeDexViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                      layout collectionViewLayout: UICollectionViewLayout,
+                      sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let padding: CGFloat = 20
+        let collectionViewSize = collectionView.frame.size.width - padding * 2
+        let widthPerItem = collectionViewSize / 3
+        return CGSize(width: widthPerItem, height: widthPerItem + 20) // Más espacio para el texto
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                      layout collectionViewLayout: UICollectionViewLayout,
+                      minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                      layout collectionViewLayout: UICollectionViewLayout,
+                      minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 12
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                      layout collectionViewLayout: UICollectionViewLayout,
+                      insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 }
