@@ -16,7 +16,35 @@ class PokemonDetailViewController: UIViewController {
         super.viewDidLoad()
         view = mainView
         presenter?.viewDidLoad()
+        setupNavigationBar()
     }
+    
+    private func setupNavigationBar() {
+        // Ocultar el botón de retroceso por defecto
+        navigationItem.hidesBackButton = true
+        
+        // Configuración del botón personalizado con imagen de retroceso
+        let backImage = UIImage(systemName: "chevron.backward") // Imagen por defecto
+        let customBackButton = UIBarButtonItem(
+            image: backImage,
+            style: .plain,
+            target: self,
+            action: #selector(backButtonTapped)
+        )
+        customBackButton.tintColor = .black // Color del botón
+        navigationItem.leftBarButtonItem = customBackButton
+        
+        // Estilo del Navigation Bar
+        navigationController?.navigationBar.barTintColor = .white // Fondo blanco
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.black
+        ]
+    }
+
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+
 }
 
 extension PokemonDetailViewController: PokemonDetailViewProtocol {
