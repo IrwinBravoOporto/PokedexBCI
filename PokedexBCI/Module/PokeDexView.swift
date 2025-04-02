@@ -58,20 +58,15 @@ class PokeDexView: UIView {
     let cancelButton: UIButton = {
         let button = UIButton(type: .system)
         
-        // Texto
         button.setTitle("Cancelar", for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         
-      
-        
-        // Efectos visuales
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 2)
         button.layer.shadowRadius = 3
         button.layer.shadowOpacity = 0.1
         
-        // Tamaño fijo
         button.translatesAutoresizingMaskIntoConstraints = false
         button.widthAnchor.constraint(equalToConstant: 85).isActive = true
         button.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -95,7 +90,6 @@ class PokeDexView: UIView {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
         
-        // Configuración para fondo transparente
         cv.backgroundColor = .clear
         cv.backgroundView = nil
         cv.isOpaque = false
@@ -114,13 +108,8 @@ class PokeDexView: UIView {
     }
     
     private func setupView() {
-        // Primero configurar las propiedades básicas
         configureComponents()
-        
-        // Luego añadir las vistas
         addViews()
-        
-        // Finalmente activar constraints
         setupConstraints()
     }
     

@@ -10,57 +10,39 @@ import UIKit
 
 extension PokeDexView {
     func addViews() {
-        // Crear stack view para searchBar y cancelButton
-        
         searchStackView.axis = .horizontal
         searchStackView.distribution = .equalSpacing
         searchStackView.alignment = .center
         searchStackView.spacing = 0
         searchStackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Configurar componentes
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Añadir elementos al stack
         searchStackView.addArrangedSubview(searchBar)
         searchStackView.addArrangedSubview(cancelButton)
-        
-        // Añadir vistas al contenedor principal
         addSubview(animationView)
-        addSubview(searchStackView) // Usamos el stack en lugar de los componentes individuales
+        addSubview(searchStackView)
         addSubview(headerImageView)
         addSubview(collectionView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Animation View (fondo)
             animationView.topAnchor.constraint(equalTo: topAnchor),
             animationView.leadingAnchor.constraint(equalTo: leadingAnchor),
             animationView.trailingAnchor.constraint(equalTo: trailingAnchor),
             animationView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            // Stack View (SearchBar + CancelButton)
             searchStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 8),
             searchStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             searchStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             searchStackView.heightAnchor.constraint(equalToConstant: 44),
             
-            // SearchBar constraints
             searchBar.heightAnchor.constraint(equalToConstant: 44),
-            
-            // CancelButton constraints
-            //cancelButton.widthAnchor.constraint(equalToConstant: 80),
-            
-            
-            // Header Image
             headerImageView.topAnchor.constraint(equalTo: searchStackView.bottomAnchor, constant: 16),
             headerImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             headerImageView.heightAnchor.constraint(equalToConstant: 120),
             headerImageView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8),
             
-            // Collection View
             collectionView.topAnchor.constraint(equalTo: headerImageView.bottomAnchor, constant: 15),
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),

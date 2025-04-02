@@ -25,7 +25,6 @@ enum NetworkError: Error {
     case invalidURL
     case invalidResponse
     case decodingError
-    // Agrega más casos según necesites
 }
 
 extension CustomError: LocalizedError {

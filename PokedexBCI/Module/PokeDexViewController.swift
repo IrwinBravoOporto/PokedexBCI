@@ -30,7 +30,6 @@ class PokeDexViewController: UIViewController {
     @objc private func cancelSearch() {
         mainView.searchBar.text = ""
         mainView.searchBar.resignFirstResponder()
-        mainView.cancelButton.isHidden = true
         presenter?.cancelSearch()
     }
 }
@@ -50,16 +49,9 @@ extension PokeDexViewController: PokeDexViewProtocol {
     func reloadCollectionView() {
         mainView.collectionView.reloadData()
     }
-    
-    func showCancelButton(_ show: Bool) {
-        mainView.cancelButton.isHidden = !show
-    }
 }
 
 extension PokeDexViewController: UISearchBarDelegate {
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        presenter?.searchDidBegin()
-    }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         presenter?.searchPokemon(with: searchText)

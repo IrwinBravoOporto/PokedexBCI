@@ -14,7 +14,6 @@ import Foundation
 
 //MARK: Presenter -> Router
 protocol PokeDexWireframeProtocol: AnyObject {
-    // Agrega métodos de navegación si es necesario
     // func navigateToPokemonDetail(with pokemon: Pokemon)
 }
 
@@ -23,7 +22,6 @@ protocol PokeDexPresenterProtocol: AnyObject {
     var interactor: PokeDexInteractorInputProtocol? { get set }
     
     func viewDidLoad()
-    func searchDidBegin()
     func cancelSearch()
     func searchPokemon(with text: String)
     func didSelectPokemon(at index: Int)
@@ -34,7 +32,6 @@ protocol PokeDexPresenterProtocol: AnyObject {
 
 //MARK: Interactor -> Presenter
 protocol PokeDexInteractorOutputProtocol: AnyObject {
-    // Agrega métodos para recibir datos del interactor
     // func didReceivePokemons(_ pokemons: [Pokemon])
     // func didFailToLoadPokemons(with error: Error)
 }
@@ -51,9 +48,7 @@ protocol PokeDexViewProtocol: AnyObject {
     var presenter: PokeDexPresenterProtocol? { get set }
     
     func playBackgroundAnimation()
-    func reloadCollectionView()
-    func showCancelButton(_ show: Bool)
-    
+    func reloadCollectionView()    
     func setPokeDexData(_ data: [ResultPokeDex])
 
 }

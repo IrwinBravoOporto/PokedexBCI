@@ -39,7 +39,6 @@ extension PokeDexPresenter: PokeDexPresenterProtocol {
     func getService() {
         // Mostrar loading
         //view?.showLoader()
-        
         interactor?.fetchServiceListPokeDex { [weak self] result in
             DispatchQueue.main.async {
                 //self?.view?.hideLoader()
@@ -58,15 +57,9 @@ extension PokeDexPresenter: PokeDexPresenterProtocol {
         }
     }
     
-    func searchDidBegin() {
-        isSearching = true
-        view?.showCancelButton(true)
-    }
-    
     func cancelSearch() {
         isSearching = false
         filteredPokemons = pokemons
-        view?.showCancelButton(false)
         view?.reloadCollectionView()
     }
     
@@ -84,7 +77,6 @@ extension PokeDexPresenter: PokeDexPresenterProtocol {
     func didSelectPokemon(at index: Int) {
         guard index < filteredPokemons.count else { return }
         let selectedPokemon = filteredPokemons[index]
-        // Aquí podrías usar el router para navegar a un detalle
         print("Selected Pokémon: \(selectedPokemon.name)")
     }
     
