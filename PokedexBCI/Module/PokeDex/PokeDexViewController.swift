@@ -10,14 +10,36 @@ import UIKit
 import Lottie
 
 class PokeDexViewController: UIViewController {
+    
+    // MARK: - Properties
     var presenter: PokeDexPresenterProtocol?
     let mainView = PokeDexView()
+    private let loadingIndicator = UIActivityIndicatorView(style: .large)
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view = mainView
+        setupView()
+        setupLoadingIndicator()
         setupDelegates()
         presenter?.viewDidLoad()
+    }
+    
+    // MARK: - Setup
+    private func setupView() {
+        view = mainView
+    }
+    
+    private func setupLoadingIndicator() {
+        loadingIndicator.color = .white
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingIndicator)
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     private func setupDelegates() {
@@ -27,6 +49,7 @@ class PokeDexViewController: UIViewController {
         mainView.cancelButton.addTarget(self, action: #selector(cancelSearch), for: .touchUpInside)
     }
     
+    // MARK: - Actions
     @objc private func cancelSearch() {
         mainView.searchBar.text = ""
         mainView.searchBar.resignFirstResponder()
@@ -34,9 +57,40 @@ class PokeDexViewController: UIViewController {
     }
 }
 
+// MARK: - PokeDexViewProtocol
 extension PokeDexViewController: PokeDexViewProtocol {
-    func setPokeDexData(_ data: [ResultPokeDex]) {
-        print(data.first?.name ?? "")
+    
+    func showLoading() {
+        DispatchQueue.main.async {
+            self.loadingIndicator.startAnimating()
+            self.view.bringSubviewToFront(self.loadingIndicator)
+        }
+    }
+    
+    func hideLoading() {
+        DispatchQueue.main.async {
+            self.loadingIndicator.stopAnimating()
+        }
+    }
+    
+    func showError(message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: "Error",
+                message: message,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+        }
+    }
+    
+    func showPokemons(_ pokemons: [ResultPokeDex]) {
+        mainView.collectionView.reloadData()
+    }
+    
+    func updateSearchResults(_ results: [ResultPokeDex]) {
+        mainView.collectionView.reloadData()
     }
     
     func playBackgroundAnimation() {
@@ -51,13 +105,14 @@ extension PokeDexViewController: PokeDexViewProtocol {
     }
 }
 
+// MARK: - UISearchBarDelegate
 extension PokeDexViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         presenter?.searchPokemon(with: searchText)
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension PokeDexViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return presenter?.numberOfPokemons ?? 0
@@ -74,12 +129,16 @@ extension PokeDexViewController: UICollectionViewDataSource {
         cell.configure(with: pokemon)
         return cell
     }
-    
+}
+
+// MARK: - UICollectionViewDelegate
+extension PokeDexViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         presenter?.didSelectPokemon(at: indexPath.row)
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension PokeDexViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
@@ -87,7 +146,7 @@ extension PokeDexViewController: UICollectionViewDelegateFlowLayout {
         let padding: CGFloat = 20
         let collectionViewSize = collectionView.frame.size.width - padding * 2
         let widthPerItem = collectionViewSize / 3
-        return CGSize(width: widthPerItem, height: widthPerItem + 20) // Más espacio para el texto
+        return CGSize(width: widthPerItem, height: widthPerItem + 20)
     }
     
     func collectionView(_ collectionView: UICollectionView,

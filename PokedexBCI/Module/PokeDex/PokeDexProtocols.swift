@@ -11,10 +11,12 @@
 // PokeDexProtocols.swift
 
 import Foundation
+import UIKit
 
 //MARK: Presenter -> Router
 protocol PokeDexWireframeProtocol: AnyObject {
-    // func navigateToPokemonDetail(with pokemon: Pokemon)
+    static func createPokeDexModule() -> UIViewController
+    func navigateToPokemonDetail(from view: PokeDexViewProtocol?, with pokemon: ResultPokeDex)
 }
 
 //MARK: View -> Presenter
@@ -22,10 +24,10 @@ protocol PokeDexPresenterProtocol: AnyObject {
     var interactor: PokeDexInteractorInputProtocol? { get set }
     
     func viewDidLoad()
+    func loadPokemons()
     func cancelSearch()
     func searchPokemon(with text: String)
     func didSelectPokemon(at index: Int)
-    func getService()
     var numberOfPokemons: Int { get }
     func pokemon(at index: Int) -> ResultPokeDex?
 }
@@ -40,7 +42,7 @@ protocol PokeDexInteractorOutputProtocol: AnyObject {
 protocol PokeDexInteractorInputProtocol: AnyObject {
     var presenter: PokeDexInteractorOutputProtocol? { get set }
     
-    func fetchServiceListPokeDex(completion: @escaping (Result<ListPokedexResponse, Error>) -> Void)
+    func fetchAllPokemons(completion: @escaping (Result<[ResultPokeDex], Error>) -> Void)
 }
 
 //MARK: Presenter -> View
@@ -49,6 +51,11 @@ protocol PokeDexViewProtocol: AnyObject {
     
     func playBackgroundAnimation()
     func reloadCollectionView()    
-    func setPokeDexData(_ data: [ResultPokeDex])
+    
+    func showLoading()
+    func hideLoading()
+    func showError(message: String)
+    func showPokemons(_ pokemons: [ResultPokeDex])
+    func updateSearchResults(_ results: [ResultPokeDex])
 
 }

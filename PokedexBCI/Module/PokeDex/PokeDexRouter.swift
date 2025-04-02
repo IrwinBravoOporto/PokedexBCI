@@ -12,17 +12,25 @@ import UIKit
 
 class PokeDexRouter: PokeDexWireframeProtocol {
     weak var viewController: UIViewController?
-
-    static func createModule() -> UIViewController {
+    
+    static func createPokeDexModule() -> UIViewController {
         let view = PokeDexViewController()
         let interactor = PokeDexInteractor()
         let router = PokeDexRouter()
         let presenter = PokeDexPresenter(interface: view, interactor: interactor, router: router)
-
+        
         view.presenter = presenter
         interactor.presenter = presenter
         router.viewController = view
-
+        
         return view
+    }
+    
+    func navigateToPokemonDetail(from view: PokeDexViewProtocol?, with pokemon: ResultPokeDex) {
+        // Implementación de navegación a detalle
+        let detailVC = PokemonDetailRouter.createModule()
+        if let sourceView = view as? UIViewController {
+            sourceView.navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
 }

@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.frame = UIScreen.main.bounds
         
-        let splashViewController = PokeDexRouter.createModule()
+        let splashViewController = PokeDexRouter.createPokeDexModule()
         let navigationController = UINavigationController(rootViewController: splashViewController) // ✅ Envolver en UINavigationController
         window?.rootViewController = navigationController
         

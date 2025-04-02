@@ -33,25 +33,21 @@ class PokeDexPresenter {
 extension PokeDexPresenter: PokeDexPresenterProtocol {
     func viewDidLoad() {
         view?.playBackgroundAnimation()
-        getService()
+        loadPokemons()
     }
     
-    func getService() {
-        // Mostrar loading
-        //view?.showLoader()
-        interactor?.fetchServiceListPokeDex { [weak self] result in
+    func loadPokemons() {
+        view?.showLoading()
+        interactor?.fetchAllPokemons { [weak self] result in
             DispatchQueue.main.async {
-                //self?.view?.hideLoader()
-                
+                self?.view?.hideLoading()
                 switch result {
-                case .success(let response):
-                    self?.pokemons = response.results ?? []
-                    self?.filteredPokemons = response.results ?? []
+                case .success(let pokemons):
+                    self?.pokemons = pokemons
+                    self?.filteredPokemons = pokemons
                     self?.view?.reloadCollectionView()
-                    
                 case .failure(let error):
-                    print("Error: \(error.localizedDescription)")
-                    //self?.view?.showError(message: "Error al cargar los Pokémon")
+                    self?.view?.showError(message: error.localizedDescription)
                 }
             }
         }
@@ -75,9 +71,8 @@ extension PokeDexPresenter: PokeDexPresenterProtocol {
     }
     
     func didSelectPokemon(at index: Int) {
-        guard index < filteredPokemons.count else { return }
-        let selectedPokemon = filteredPokemons[index]
-        print("Selected Pokémon: \(selectedPokemon.name)")
+        guard let pokemon = pokemon(at: index) else { return }
+        router.navigateToPokemonDetail(from: view, with: pokemon)
     }
     
     var numberOfPokemons: Int {
