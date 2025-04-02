@@ -1,0 +1,6 @@
+framework module Pods_PokedexBCI {
+  umbrella header "Pods-PokedexBCI-umbrella.h"
+
+  export *
+  module * { export * }
+}
