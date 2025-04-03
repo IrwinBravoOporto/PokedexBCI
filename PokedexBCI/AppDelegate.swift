@@ -16,15 +16,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let splashViewController = PokeDexRouter.createPokeDexModule()
-        let navigationController = UINavigationController(rootViewController: splashViewController) // ✅ Envolver en UINavigationController
-        window?.rootViewController = navigationController
+        // Configuración para testing
+        if ProcessInfo.processInfo.environment["UITEST_MODE"] == "1" {
+            // Vista mínima para pruebas
+            let testVC = UIViewController()
+            testVC.view.backgroundColor = .white
+            window?.rootViewController = testVC
+        } else {
+            // Configuración normal
+            let splashViewController = PokeDexRouter.createPokeDexModule()
+            window?.rootViewController = UINavigationController(rootViewController: splashViewController)
+        }
         
         window?.makeKeyAndVisible()
-
-        UserDefaults.standard.setValue(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
-        
         return true
+    }
+    
+    private func setupStandardEnvironment() {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let splashViewController = PokeDexRouter.createPokeDexModule()
+        let navigationController = UINavigationController(rootViewController: splashViewController)
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
+    }
+    
+    private func setupUITestingEnvironment() {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        
+        // Configuración mínima para pruebas
+        let testViewController = UIViewController()
+        testViewController.view.backgroundColor = .white
+        window?.rootViewController = testViewController
+        window?.makeKeyAndVisible()
+        
+        // Espera breve para que la ventana esté lista
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
     }
 }
 

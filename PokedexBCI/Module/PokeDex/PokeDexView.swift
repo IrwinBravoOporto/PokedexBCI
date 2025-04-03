@@ -107,13 +107,13 @@ class PokeDexView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupView() {
+     func setupView() {
         configureComponents()
         addViews()
         setupConstraints()
     }
     
-    private func configureComponents() {
+     func configureComponents() {
         animationView.contentMode = .scaleAspectFill
         animationView.loopMode = .loop
         animationView.backgroundColor = .clear

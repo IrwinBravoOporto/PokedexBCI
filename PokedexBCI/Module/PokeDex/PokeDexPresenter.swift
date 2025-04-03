@@ -16,9 +16,9 @@ class PokeDexPresenter {
     var interactor: PokeDexInteractorInputProtocol?
     private let router: PokeDexWireframeProtocol
     
-    private var pokemons: [ResultPokeDex] = []
-    private var filteredPokemons: [ResultPokeDex] = []
-    private var isSearching = false
+     var pokemons: [ResultPokeDex] = []
+     var filteredPokemons: [ResultPokeDex] = []
+     var isSearching = false
     
     // MARK: - Initialization
     init(interface: PokeDexViewProtocol, interactor: PokeDexInteractorInputProtocol?, router: PokeDexWireframeProtocol) {
